@@ -2,37 +2,39 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# Load the preprocessed dataset
-df = pd.read_csv("dataset/preprocessed_car_data.csv")
+# Load the dataset
+df = pd.read_csv("Dataset/advertising_processed.csv")
 
-# Display basic statistics
+# Display basic information
+print("Dataset Info:")
+df.info()
+print("\nSummary Statistics:")
 print(df.describe())
 
-# Check for correlations
-plt.figure(figsize=(10, 6))
-sns.heatmap(df.corr(), annot=True, cmap='coolwarm', fmt='.2f')
+# Check for missing values
+print("\nMissing values per column:")
+print(df.isnull().sum())
+
+# Visualizing feature distributions
+plt.figure(figsize=(10,5))
+sns.histplot(df, kde=True, bins=30)
+plt.title("Feature Distributions")
+plt.show()
+
+# Correlation heatmap
+plt.figure(figsize=(8,6))
+sns.heatmap(df.corr(), annot=True, cmap="coolwarm", fmt=".2f")
 plt.title("Feature Correlation Heatmap")
 plt.show()
 
-# Distribution of target variable
-plt.figure(figsize=(8, 5))
-sns.histplot(df['selling_price'], bins=50, kde=True)
-plt.title("Distribution of Selling Price")
-plt.xlabel("Selling Price")
-plt.ylabel("Frequency")
+# Pairplot to visualize relationships
+sns.pairplot(df)
 plt.show()
 
-# Pairplot of selected features
-selected_features = ['year', 'km_driven', 'mileage', 'engine', 'max_power', 'selling_price']
-sns.pairplot(df[selected_features])
+# Boxplots to detect outliers
+plt.figure(figsize=(10,5))
+df.boxplot()
+plt.title("Boxplot of Features")
 plt.show()
 
-# Boxplot of selling price by fuel type
-plt.figure(figsize=(8, 5))
-sns.boxplot(x=df['fuel'], y=df['selling_price'])
-plt.title("Selling Price by Fuel Type")
-plt.xlabel("Fuel Type")
-plt.ylabel("Selling Price")
-plt.show()
-
-print("Data analysis completed!")
+print("Data Analysis Completed.")

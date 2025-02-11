@@ -1,34 +1,27 @@
 import pandas as pd
-import numpy as np
-from sklearn.preprocessing import LabelEncoder, OneHotEncoder, StandardScaler
-from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import StandardScaler
 
 # Load the dataset
-df = pd.read_csv("dataset/Car details v3.csv")
+df = pd.read_csv("Dataset/advertising.csv")
 
-# Drop irrelevant columns
-df.drop(columns=['name', 'torque'], inplace=True)
+# Drop duplicates if any
+df = df.drop_duplicates()
 
-# Handling missing values
-df['mileage'] = df['mileage'].str.extract(r'(\d+\.\d+)').astype(float)
-df['engine'] = df['engine'].str.extract(r'(\d+)').astype(float)
-df['max_power'] = df['max_power'].str.extract(r'(\d+\.\d+)').astype(float)
+# Define features (X) and target variable (y)
+X = df.drop(columns=['Sales'])  # Features
+y = df['Sales']  # Target
 
-imputer = SimpleImputer(strategy='median')
-df[['mileage', 'engine', 'max_power', 'seats']] = imputer.fit_transform(df[['mileage', 'engine', 'max_power', 'seats']])
-
-# Encoding categorical features
-label_enc = LabelEncoder()
-df['fuel'] = label_enc.fit_transform(df['fuel'])
-df['seller_type'] = label_enc.fit_transform(df['seller_type'])
-df['transmission'] = label_enc.fit_transform(df['transmission'])
-df['owner'] = label_enc.fit_transform(df['owner'])
-
-# Feature Scaling
+# Normalize the feature variables
 scaler = StandardScaler()
-df[['year', 'km_driven', 'mileage', 'engine', 'max_power', 'seats']] = scaler.fit_transform(df[['year', 'km_driven', 'mileage', 'engine', 'max_power', 'seats']])
+X_scaled = scaler.fit_transform(X)
 
-# Save preprocessed dataset
-df.to_csv("dataset/preprocessed_car_data.csv", index=False)
+# Convert back to DataFrame with column names
+X_scaled_df = pd.DataFrame(X_scaled, columns=X.columns)
 
-print("Data preprocessing completed. Saved as 'preprocessed_car_data.csv'")
+# Combine processed features and target variable
+processed_df = pd.concat([X_scaled_df, y], axis=1)
+
+# Save to a new CSV file
+processed_df.to_csv("Dataset/advertising_processed.csv", index=False)
+
+print("Processed CSV file has been saved successfully as 'advertising_processed.csv'.")
